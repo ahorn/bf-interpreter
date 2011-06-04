@@ -10,10 +10,10 @@ struct VM {
   FILE *out;
 
   /* Manipulate available slots with >, <, + and - instructions */
-  int mem_size;
+  unsigned int mem_size;
   int *mem;
 };
 
 /* Interpret BF instructions in instr[0..instr_len] */
-int run(const VM *vm, const char *instr, const int instr_len);
+int run(const VM *vm, const char *instr, const size_t instr_len);
 #endif

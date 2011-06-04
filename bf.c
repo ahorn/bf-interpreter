@@ -28,6 +28,7 @@ static void usage(const char *err)
   exit(1);
 }
 
+/* signed int in case the command line option is a negative number */
 static int mem_size = BF_MEM_SIZE;
 static char* filename = NULL;
 
@@ -59,7 +60,7 @@ static void parse_args(int argc, char **argv)
 /* Read an entire file as a string. Returns the length of the string. */
 unsigned int read(FILE *file, char **buffer)
 {
-  unsigned long size;
+  size_t size;
 
   fseek(file, 0, SEEK_END);
   size = ftell(file);
@@ -100,7 +101,7 @@ int main (int argc, char **argv)
 
   int *mem = malloc(mem_size * sizeof(int));
   const VM vm = { stdin, stdout, mem_size, mem };
-  int instr_len;
+  size_t instr_len;
   char *instr;
   instr_len = read(file, &instr);
   if(instr_len == 0) {

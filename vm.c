@@ -9,9 +9,10 @@
  *   MAR - Memory Address Register
  *   MBR - Memory Buffer Register
  */
-int run(const VM *vm, const char *instr, const int instr_len) {
+int run(const VM *vm, const char *instr, const size_t instr_len) {
   int io, nest;
-  unsigned int mar = 0, pc;
+  unsigned int mar = 0;
+  size_t pc;
   for(pc = 0; pc < instr_len; pc++) {
     switch(instr[pc]) {
     case '>':
