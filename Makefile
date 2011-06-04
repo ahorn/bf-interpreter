@@ -11,7 +11,6 @@ $(TARG): $(CFILES)
 
 install: $(TARG) 
 	install -m 755 $(TARG) /usr/local/bin
-	gzip < $(TARG).1 > /usr/local/man/man1/$(TARG).1.gz
 
 uninstall:
 	rm -rf /usr/local/bin/$(TARG)
