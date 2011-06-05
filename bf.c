@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h> 
+#include <errno.h>
 #include <stdarg.h> 
 #include "vm.h"
 
@@ -28,13 +29,13 @@ static void usage(const char *err)
   exit(1);
 }
 
-/* signed int in case the command line option is a negative number */
-static int mem_size = BF_MEM_SIZE;
+static long int mem_size = BF_MEM_SIZE;
 static char* filename = NULL;
 
-/* Parse command line argument */
-static void parse_args(int argc, char **argv)
+/* Parse command line arguments */
+static int parse_args(int argc, char **argv)
 {
+  char *tail;
   char *arg;
   while(argc > 0) {
     arg = *argv;
@@ -44,9 +45,13 @@ static void parse_args(int argc, char **argv)
         argv++;
         argc--;
 
-        mem_size = atoi(*argv);
+        errno = 0;
+        mem_size = strtol(*argv, &tail, 0);
+        if(errno || *tail != '\0') {
+          return 0;
+        }
       } else {
-        usage(bf_usage);
+        return 0;
       }
     } else {
       filename = arg;
@@ -55,6 +60,7 @@ static void parse_args(int argc, char **argv)
     argv++;
     argc--;
   }
+  return 1;
 }
 
 /* Read an entire file as a string. Returns the length of the string. */
@@ -85,11 +91,14 @@ unsigned int read(FILE *file, char **buffer)
 /* Interpret filename argument as BF program */
 int main (int argc, char **argv)
 {
+  int ok;
+
   argv++;
   argc--;
-  parse_args(argc, argv);
 
-  if(filename == NULL || mem_size <= 0) {
+  ok = parse_args(argc, argv);
+
+  if(!ok || filename == NULL || mem_size <= 0) {
     usage(bf_usage);
   }
 
@@ -108,7 +117,7 @@ int main (int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  const int ok = run(&vm, instr, instr_len);
+  ok = run(&vm, instr, instr_len);
 
   free(instr);
   free(mem);
