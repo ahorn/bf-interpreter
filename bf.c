@@ -109,11 +109,20 @@ int main (int argc, char **argv)
   }
 
   int *mem = malloc(mem_size * sizeof(int));
+  if(mem == NULL) {
+    error("malloc() failed");
+    fclose(file);
+    return EXIT_FAILURE;
+  }
   const VM vm = { stdin, stdout, mem_size, mem };
   size_t instr_len;
-  char *instr;
+  char *instr = NULL;
   instr_len = read(file, &instr);
   if(instr_len == 0) {
+    if(instr != NULL) {
+      free(instr);
+    }
+    free(mem);
     return EXIT_FAILURE;
   }
 
